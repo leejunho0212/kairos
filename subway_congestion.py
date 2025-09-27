@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-# 🎨 호선별 색상 매핑 (HTML 색상)
+# 호선별 색상
 line_colors = {
     "1호선": "navy",
     "2호선": "green",
@@ -76,7 +76,7 @@ if station and time_input:
                     st.warning("혼잡도가 0보다 큰 데이터가 없습니다.")
                 else:
                     df_avg = df_melted.groupby(['호선', '상하구분', '시간대'])['혼잡도'].mean().reset_index()
-                    df_avg['혼잡도'] = df_avg['혼잡도'].map(lambda x: f"{x:.1f}%")  # 바로 '혼잡도'로 표시
+                    df_avg['혼잡도'] = df_avg['혼잡도'].map(lambda x: f"{x:.1f}%")
                     df_avg['시간_minutes'] = df_avg['시간대'].apply(time_str_to_minutes)
                     df_avg = df_avg.sort_values(by=['호선', '상하구분', '시간_minutes']).drop(columns='시간_minutes')
 
@@ -88,14 +88,14 @@ if station and time_input:
                         color = line_colors.get(line, "black")
                         df_line = df_avg[df_avg['호선'] == line]
 
-                        # HTML 사용해 글자 색 적용
+                        # 글자 색 적용
                         st.markdown(f"**<span style='color:{color}'>{line}</span>**", unsafe_allow_html=True)
 
                         for group in df_line['상하구분'].unique():
                             group_df = df_line[df_line['상하구분'] == group][['시간대','혼잡도']].reset_index(drop=True)
-                            group_df.index = [''] * len(group_df)  # 인덱스 제거
+                            group_df.index = [''] * len(group_df)
                             st.markdown(f"**{group}**")
-                            st.table(group_df)  # 시간대 + 혼잡도만 표시, 인덱스 제거
+                            st.table(group_df)  # 시간대 + 혼잡도만 표시
 
                     st.subheader("가장 혼잡도 낮은 시간")
                     for _, row in min_df.iterrows():
@@ -104,3 +104,4 @@ if station and time_input:
                             f"<span style='color:{color}'>{row['호선']}</span> {row['상하구분']}: {row['시간대']} ({row['혼잡도']})",
                             unsafe_allow_html=True
                         )
+
